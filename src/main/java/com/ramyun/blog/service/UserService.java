@@ -1,9 +1,9 @@
 package com.ramyun.blog.service;
 
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ramyun.blog.model.User;
 import com.ramyun.blog.repository.UserRepository;
@@ -25,5 +25,10 @@ public class UserService {
             System.out.println("UserService: 회원가입(): "+e.getMessage());
         }
         return -1;
+    }
+
+    @Transactional(readOnly=true) // select할 때 트랜잭션 시작, 서비스 종료시에 트랙잭션 종료 (정합성)
+    public User 로그인(User user){
+        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
     }
 }
