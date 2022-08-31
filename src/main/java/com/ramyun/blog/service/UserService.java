@@ -2,9 +2,11 @@ package com.ramyun.blog.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ramyun.blog.model.RoleType;
 import com.ramyun.blog.model.User;
 import com.ramyun.blog.repository.UserRepository;
 
@@ -15,20 +17,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
-    public int 회원가입(User user){
-        try{
-            userRepository.save(user);
-            return 1;
-        }catch(Exception e){
-            e.printStackTrace();
-            System.out.println("UserService: 회원가입(): "+e.getMessage());
-        }
-        return -1;
-    }
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
-    @Transactional(readOnly=true) // select할 때 트랜잭션 시작, 서비스 종료시에 트랙잭션 종료 (정합성)
-    public User 로그인(User user){
-        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+    @Transactional
+    public void 회원가입(User user){
+        String rawPassword=user.getPassword();
+        String encPassword = encoder.encode(rawPassword);
+        user.setPassword(encPassword);
+        user.setRole(RoleType.USER);
+        userRepository.save(user);
     }
 }
