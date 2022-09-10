@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class Board {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private int Id;
+    private int id;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -38,7 +38,6 @@ public class Board {
     @Lob //대용량 데이터
     private String content;
 
-    @ColumnDefault("0")
     private int count;
 
     //EAGER = 무조건 들고오기 LAZY = 미뤘다가 필요할 때 들고오기
