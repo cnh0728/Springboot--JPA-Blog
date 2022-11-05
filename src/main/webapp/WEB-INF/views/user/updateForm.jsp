@@ -4,10 +4,11 @@
 <%@ include file = "../layout/header.jsp" %>
 
 <div class="container">
-  <form action="/auth/loginProc" method="post">
+  <form>
+    <input type="hidden" id="id" value="${principal.user.id}"/>
     <div class="form-group">
       <label for="username">Username</label>
-      <input type="username" name="username" class="form-control" placeholder="Enter username" id="username">
+      <input type="text" value="${principal.user.username}" name="username" class="form-control" placeholder="Enter username" id="username" readonly>
     </div>
 
     <div class="form-group">
@@ -15,9 +16,12 @@
       <input type="password" name="password" class="form-control" placeholder="Enter password" id="password">
     </div>
 
-    <button id="btn-login" class="btn btn-primary">로그인</button>
-    <a href="https://kauth.kakao.com/oauth/authorize?client_id=6f2035f47147666e09b1dec9fb2ace2f&redirect_uri=http://localhost:8000/auth/kakao/callback&response_type=code
-    "><img height="38" src="/image/kakao_login_button.png"/></a>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" value="${principal.user.email}" class="form-control" placeholder="Enter email" id="email">
+    </div>
+
+    <button id="btn-update" class="btn btn-primary">회원수정완료</button>
   </form>
 </div>
 

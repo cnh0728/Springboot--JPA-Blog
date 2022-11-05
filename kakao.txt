@@ -1,0 +1,38 @@
+네이티브 앱 키
+ee46917d390fc3f46dd36826b423195f
+REST API 키
+6f2035f47147666e09b1dec9fb2ace2f
+JavaScript키
+f2328ae9e9983a37f91df51a4f7033ff
+Admin키
+d6482bec1d90109a48db79d6f8837ace
+
+3. Redirect URI
+http://localhost:8000/auth/kakao/callback
+
+4. 카카오 동의 구성
+USER 오브젝트 : id(번호), username, password, account_email
+카카오로부터 받을 정보: profile정보(필수), email(선택)
+
+5. 로그인 요청 주소 (GET)
+https://kauth.kakao.com/oauth/authorize?client_id=6f2035f47147666e09b1dec9fb2ace2f&redirect_uri=http://localhost:8000/auth/kakao/callback&response_type=code
+
+6. 응답받은코드
+http://localhost:8000/auth/kakao/callback?code=ei25yA4SiXnkgy5s8HaoURooG6Y-3N29jv9uwAyE5VmTMSaCrNm6vWL9Y65kwXuQhajF5wopyV4AAAGEPdu_2Q
+
+7. 토큰 발급 요청 주소 (POST) - http body에 데이터를 전달 (5가지 데이터 담기)
+https://kauth.kakao.com/oauth/token
+MIME : application/x-www-form-urlencoded;charset=utf-8
+grant_type = authorization_code
+client_id = 6f2035f47147666e09b1dec9fb2ace2f
+code = code
+refresh_token = 응답받은 코드
+
+8. 토큰을 통한 사용자 정보 조회(POST)
+https://kapi.kakao.com/v2/user/me
+Authorization: Bearer ${ACCESS_TOKEN}/KakaoAK ${APP_ADMIN_KEY}
+Content-type: application/x-www-form-urlencoded;charset=utf-8
+
+access_token = pyeix7NPbVamme93VUT4Ke9gAur5sn1q9BgNT476CilvVAAAAYQ984gW
+{"access_token":"pyeix7NPbVamme93VUT4Ke9gAur5sn1q9BgNT476CilvVAAAAYQ984gW","token_type":"bearer","refresh_token":"Il7C-0iBgk8F-WVcpHb1U4tRjd4_b-mC8YPfLm3WCilvVAAAAYQ984gV","expires_in":21599,"scope":"account_email profile_image profile_nickname","refresh_token_expires_in":5183999}
+
