@@ -1,10 +1,18 @@
 package com.ramyun.blog.controller;
 
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -18,10 +26,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ramyun.blog.config.auth.PrincipalDetail;
 import com.ramyun.blog.model.KakaoProfile;
 import com.ramyun.blog.model.OAuthToken;
+import com.ramyun.blog.model.User;
+import com.ramyun.blog.service.UserService;
 
 @Controller
 public class UserController {
     
+    @Value("${ramyun.key}")
+    private String ramyunKey; 
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/auth/joinForm")
     public String joinForm(){
         return "user/joinForm";
@@ -33,8 +52,8 @@ public class UserController {
     }
 
     @GetMapping("/auth/kakao/callback")
-    public @ResponseBody String kakaoCallBack(String code) throws JsonMappingException, JsonProcessingException{ //get으로 날라오면 이렇게 바로 받을 수 있다.
-
+    public String kakaoCallBack(String code) throws JsonMappingException, JsonProcessingException{ //get으로 날라오면 이렇게 바로 받을 수 있다.
+//@ResponseBody 있으면 파일 안찾아감
         //POST방식으로 key=value 데이터를 요청 (카카오로)
         //Retrofit2, OkHttp, RestTemplate
         RestTemplate rt = new RestTemplate(); //post방식 쉽게함
@@ -91,7 +110,30 @@ public class UserController {
         System.out.println("카카오 아이디(번호): "+kakaoProfile.getId());
         System.out.println("카카오 이메일: "+kakaoProfile.getKakao_account().getEmail());
 
-        return response2.getBody();
+        System.out.println("블로그서버 유저네임: "+kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId());
+        System.out.println("블로그서버 이메일: "+kakaoProfile.getKakao_account().getEmail());
+        //UUID란 중복되지 않은 어떤 특정값을 만들어내는 알고리듬
+        System.out.println("블로그서버 패스워드: "+ramyunKey);
+
+        User kakaoUser = User.builder()
+        .username(kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId())
+        .password(ramyunKey.toString())
+        .email(kakaoProfile.getKakao_account().getEmail())
+        .oauth("kakao")
+        .build();
+        
+        //가입자 혹은 비가입자 체크해서 처리
+        User originUser = userService.회원찾기(kakaoUser.getUsername());
+
+        if(originUser.getUsername() == null){
+            System.out.println("신규회원입니다....!");
+            userService.회원가입(kakaoUser);
+        }
+        //로그인처리
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getUsername(), ramyunKey));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return "redirect:/";
     }
     
     @GetMapping("/user/updateForm")
