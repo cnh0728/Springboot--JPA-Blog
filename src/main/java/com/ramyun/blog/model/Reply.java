@@ -1,6 +1,7 @@
 package com.ramyun.blog.model;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.ramyun.blog.controller.dto.ReplySaveRequestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +42,12 @@ public class Reply {
     private User user;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private LocalDateTime createDate;
+
+    // public void update(User user, Board board, String content){
+    //     setUser(user);
+    //     setBoard(board);
+    //     setContent(content);
+    // }
+
 }
